@@ -1,7 +1,9 @@
+import Profile from "./Profile";
+
 function Dashboard() {
   return (
     <div>
-      <p>Dashboard page</p>
+      <Profile />
     </div>
   );
 }
