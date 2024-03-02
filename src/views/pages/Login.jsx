@@ -1,15 +1,12 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import { useState } from "react";
 import * as Yup from "yup";
-import { useLogin } from "../../features/hooks/useAuth";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import ApiService from "../../services/ApiService";
 import { loginThunk } from "../../features/slices/authSlice";
 
 function Login() {
-  const { login } = useLogin();
-  const api = new ApiService();
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -23,14 +20,13 @@ function Login() {
       password: Yup.string().required("Password is required"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       try {
-        // const resp = await api.postWithOutToken("/login", values);\
+        setIsLoading(true);
         await dispatch(loginThunk(values));
-        // await login(values);
-        toast.success("Successfully logged in");
       } catch (error) {
-        toast.error(error.response);
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     },
   });
@@ -84,9 +80,12 @@ function Login() {
         </div>
         <button
           type="submit"
-          className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+          disabled={isLoading}
+          className={`w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 ${
+            isLoading ? "opacity-30" : null
+          }`}
         >
-          Sign in
+          {isLoading ? "Loading ......" : "Sign In"}
         </button>
         <p className="text-sm font-light text-gray-500 dark:text-gray-400">
           Don’t have an account yet?{" "}

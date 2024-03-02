@@ -2,9 +2,9 @@ import axios from "axios";
 import config from "../config/config";
 
 class ApiService {
-  constructor(baseUrl = config.apiUrl) {
+  constructor(baseURL = config.apiUrl) {
     this.instance = axios.create({
-      baseUrl,
+      baseURL,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -51,6 +51,7 @@ class ApiService {
   }
 
   async postWithOutToken(endpoint, payload) {
+    console.log(payload);
     return this.makeRequest("post", endpoint, { data: payload });
   }
 

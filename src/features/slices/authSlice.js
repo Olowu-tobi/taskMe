@@ -1,17 +1,21 @@
 /* eslint-disable no-useless-catch */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiService from "../../services/ApiService";
+import { toast } from "react-toastify";
 
 const api = new ApiService();
 
 //  async thunk for login
 export const loginThunk = createAsyncThunk(
   "auth/login",
-  async ({ credentials }) => {
+  async (credentials) => {
     try {
-      const loginResp = await api.postWithOutToken("/login", credentials);
-      return loginResp.token;
+      const loginResp = await api.postWithOutToken("/auth/login", credentials);
+      toast.success("Successfully logged in");
+
+      return loginResp;
     } catch (error) {
+      toast.error(error.response.data.message);
       throw error;
     }
   }
@@ -22,6 +26,7 @@ export const logoutThunk = createAsyncThunk("auth/logout", async () => {
   try {
     console.log("");
   } catch (error) {
+    toast.error(error.message);
     throw error;
   }
 });
@@ -29,10 +34,16 @@ export const logoutThunk = createAsyncThunk("auth/logout", async () => {
 //  async thunk for register
 export const registerThunk = createAsyncThunk(
   "auth/register",
-  async ({ credentials }) => {
+  async (credentials) => {
     try {
-      console.log(credentials);
+      const loginResp = await api.postWithOutToken(
+        "/auth/register",
+        credentials
+      );
+      toast.success("Successfully Registered");
+      return null;
     } catch (error) {
+      toast.error(error.response.data.message);
       throw error;
     }
   }
@@ -43,8 +54,10 @@ export const fetchUserData = createAsyncThunk(
   "auth/fetchUserData",
   async () => {
     try {
-      console.log("");
+      const userData = await api.getWithToken("/getProfile");
+      return userData.user;
     } catch (error) {
+      toast.error(error.message);
       throw error;
     }
   }

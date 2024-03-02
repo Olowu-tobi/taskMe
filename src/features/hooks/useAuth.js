@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 /* eslint-disable no-empty */
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,7 +16,7 @@ export const useLogin = () => {
 
       await dispatch(fetchUserData());
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
   return login;
@@ -27,7 +28,7 @@ export const useLogout = () => {
     try {
       await dispatch(logoutThunk());
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
   return logout;
@@ -39,7 +40,7 @@ export const useFetchUserData = () => {
     try {
       await dispatch(fetchUserData());
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
   return fetching;
@@ -51,7 +52,7 @@ export const useRegistertData = () => {
     try {
       await dispatch(registerThunk(credentials));
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
   return register;
