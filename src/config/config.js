@@ -1,5 +1,5 @@
 const config = {
-  apiUrl: "http://localhost:3001",
+  apiUrl: import.meta.env.VITE_API_URL,
   appName: "taskMe",
   appVersion: "1.0.0",
   appDescription: "Task me Project",
