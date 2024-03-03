@@ -29,7 +29,8 @@ class ApiService {
 
   getDecodedToken(tokenKey) {
     const undecodedToken = localStorage.getItem(tokenKey);
-    return undecodedToken ? JSON.parse(undecodedToken) : null;
+    // return undecodedToken ? JSON.stringify(undecodedToken) : null;
+    return undecodedToken;
   }
 
   async requestWithToken(method, endpoint, payload = null, tokenKey = "token") {

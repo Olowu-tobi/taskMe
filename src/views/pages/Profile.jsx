@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAuthState, useLogout } from "../../features/hooks/useAuth";
 
 function Profile() {
   const [showToggle, setShowToggle] = useState(false);
+
+  const { user } = useAuthState();
+  const logout = useLogout();
 
   const handleToggle = () => {
     setShowToggle(!showToggle);
@@ -59,7 +63,10 @@ function Profile() {
                 </NavLink>
               </li>
               <li>
-                <p className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-600 dark:hover:text-white">
+                <p
+                  onClick={logout}
+                  className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-600 dark:hover:text-white"
+                >
                   Log Out
                 </p>
               </li>
@@ -73,10 +80,10 @@ function Profile() {
             alt="Bonnie image"
           />
           <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-            Bonnie Green
+            {user.first_name} {user.last_name}
           </h5>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            Visual Designer
+            {user.email}
           </span>
           <div className="flex mt-4 md:mt-6">
             <NavLink

@@ -58,6 +58,7 @@ export const fetchUserData = createAsyncThunk(
       return userData.user;
     } catch (error) {
       toast.error(error.message);
+      console.log(error);
       throw error;
     }
   }
@@ -87,7 +88,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.token = action.payload.token;
-        state.user = action.payload;
+        state.user = null;
         localStorage.setItem("token", action.payload.token);
       })
       .addCase(loginThunk.rejected, (state, action) => {
