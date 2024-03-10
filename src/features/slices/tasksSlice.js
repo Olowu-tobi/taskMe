@@ -8,7 +8,7 @@ const api = new ApiService();
 export const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
   try {
     const response = await api.getWithOutToken("/tasks/all");
-    return response.data;
+    return response;
   } catch (error) {
     toast.error("error while getting tasks");
     throw error;
@@ -21,7 +21,7 @@ export const fetchUserTasks = createAsyncThunk(
   async () => {
     try {
       const response = await api.getWithToken("/tasks");
-      return response.data;
+      return response;
     } catch (error) {
       toast.error("couldn't fetch tasks");
       throw error;
@@ -35,7 +35,7 @@ export const fetchSingleTask = createAsyncThunk(
   async (taskId) => {
     try {
       const response = await api.getWithOutToken(`/tasks/get/${taskId}`);
-      return response.data;
+      return response;
     } catch (error) {
       toast.error("couldn't fetch single task");
       throw error;
@@ -79,7 +79,7 @@ export const updateTask = createAsyncThunk(
         `/tasks/edit/${taskId}`,
         updatedData
       );
-      return response.data;
+      return response;
     } catch (error) {
       toast.error("couldn't update task");
       throw error;
