@@ -118,9 +118,12 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
       })
-      .addCase(fetchUserData.rejected, (state, action) => {
+      .addCase(fetchUserData.rejected, (state) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.isAuthenticated = false;
+        state.token = null;
+        state.user = null;
+        localStorage.removeItem("token");
       });
   },
 });
