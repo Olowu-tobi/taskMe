@@ -1,12 +1,17 @@
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import * as yup from "yup";
 import { useTasks } from "../../features/hooks/useTasks";
 import { useLoading } from "../../features/hooks/useLoading";
+import { toast } from "react-toastify";
 
 function AddTask() {
   const { addTask, loading } = useTasks();
   const { setLoading } = useLoading();
+  const [selectedImage, setSelectedImage] = useState({
+    previewImage: null,
+    imageData: null,
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -20,18 +25,92 @@ function AddTask() {
       price: yup.string().required("Price is required"),
     }),
     onSubmit: async (values) => {
+      if (!selectedImage.imageData) {
+        toast.error("Please select an image");
+        return;
+      }
+
       setLoading(true);
+
+      // values.image = selectedImage.imageData;
+      values.image = selectedImage.previewImage;
+
       await addTask(values);
+
       formik.resetForm();
+      setSelectedImage({
+        previewImage: null,
+        imageData: null,
+      });
       setLoading(false);
     },
   });
+
+  // Function to handle image selection
+  const handleImageChange = (event) => {
+    const imageFile = event.target.files[0];
+    // Display selected image preview
+    setSelectedImage({
+      previewImage: URL.createObjectURL(imageFile),
+      imageData: imageFile,
+    });
+  };
+
+  // Function to handle image removal
+  const removeImage = () => {
+    setSelectedImage({
+      previewImage: null,
+      imageData: null,
+    });
+  };
+
   return (
     <div className="flex justify-center items-center h-full w-full">
       <form
         onSubmit={formik.handleSubmit}
         className="w-1/2 mx-auto bg-gray-900 mt-16 p-10 rounded-lg"
       >
+        {/* Add file input for image selection */}
+        <div className="mb-4">
+          <label
+            htmlFor="image"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Choose an image
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+          {selectedImage.previewImage ? (
+            <div className="relative">
+              <img
+                src={selectedImage.previewImage}
+                alt="Selected"
+                className="max-w-full h-auto mb-2"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute top-0 right-0 p-1 bg-red-500 rounded-full text-white text-xs"
+              >
+                X
+              </button>
+            </div>
+          ) : (
+            <label
+              htmlFor="image"
+              className="cursor-pointer block bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 py-2 px-4 rounded-lg text-center"
+            >
+              Select Image
+            </label>
+          )}
+        </div>
+
         <label
           htmlFor="title"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"

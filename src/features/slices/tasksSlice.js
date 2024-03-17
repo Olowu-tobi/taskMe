@@ -46,7 +46,7 @@ export const fetchSingleTask = createAsyncThunk(
 // Async Thunk to add a new task
 export const addTask = createAsyncThunk("tasks/addTask", async (taskData) => {
   try {
-    const response = await api.postWithToken("/tasks/add", taskData);
+    const response = await api.postFormDataWithToken("/tasks/add", taskData);
     toast.success(response.message);
     return response;
   } catch (error) {
