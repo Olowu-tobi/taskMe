@@ -2,9 +2,11 @@ import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
 import { useTasks } from "../../features/hooks/useTasks";
+import { useLoading } from "../../features/hooks/useLoading";
 
 function AddTask() {
   const { addTask, loading } = useTasks();
+  const { setLoading } = useLoading();
 
   const formik = useFormik({
     initialValues: {
@@ -18,8 +20,10 @@ function AddTask() {
       price: yup.string().required("Price is required"),
     }),
     onSubmit: async (values) => {
+      setLoading(true);
       await addTask(values);
       formik.resetForm();
+      setLoading(false);
     },
   });
   return (

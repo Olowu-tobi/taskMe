@@ -1,13 +1,70 @@
 import React, { useEffect } from "react";
 import { useTasks } from "../../features/hooks/useTasks";
+import { useAuthState } from "../../features/hooks/useAuth";
+import { toast } from "react-toastify";
+import { useLoading } from "../../features/hooks/useLoading";
+import ApiService from "../../services/ApiService";
 
 function AllTasks() {
   const { fetchTasks, loading, tasks } = useTasks();
+  const api = new ApiService();
+
+  const { user } = useAuthState();
+  const { setLoading } = useLoading();
+
   useEffect(() => {
     if (!tasks.length) {
       fetchTasks();
     }
   }, [fetchTasks, tasks]);
+
+  const payWithPaystack = (task) => {
+    setLoading(true);
+    const email = user.email;
+
+    const paymentHandler = window.PaystackPop.setup({
+      key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+      email: email,
+      amount: task.price * 100,
+      currency: "NGN",
+      onClose: function () {
+        toast.warning("PAYMENT POPUP CLOSED");
+        setLoading(false);
+      },
+      callback: (response) => {
+        const paymentRunner = async () => {
+          if (response.status === "success") {
+            try {
+              const myOrderData = {
+                order: {
+                  task_id: task._id,
+                  price: task.price,
+                  status: "pending",
+                  quantity: 1,
+                },
+                transactions: {
+                  status: "pendings",
+                  price: task.price,
+                  reference: response.reference,
+                },
+              };
+
+              await api.postWithToken("/make-order", myOrderData);
+              toast.success("PAYMENT successful");
+              setLoading(false);
+            } catch (error) {
+              toast.error(error.message);
+            }
+          } else {
+            toast.error("PAYMENT FAILED");
+          }
+        };
+
+        paymentRunner();
+      },
+    });
+    paymentHandler.openIframe();
+  };
 
   return (
     <div className="w-full grid mt-8 px-8 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-5">
@@ -26,8 +83,9 @@ function AllTasks() {
               <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                 {singleTask.description}
               </p>
-              <a
-                href="#"
+              <button
+                type="button"
+                onClick={() => payWithPaystack(singleTask)}
                 className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
                 {`Buy for $${singleTask.price}`}
@@ -46,7 +104,7 @@ function AllTasks() {
                     d="M1 5h12m0 0L9 1m4 4L9 9"
                   />
                 </svg>
-              </a>
+              </button>
             </div>
           ))}
     </div>
